@@ -5,9 +5,8 @@ import (
 )
 
 func trans(s string)int{
-	t:=[]rune(s)
 	var sum int= 1
-	for _,i:=range t{
+	for _,i:=range s{
 		sum=sum*int(i-rune('A')+1)
 		//fmt.Println(int(i-rune('A')+1))
 	}
@@ -25,4 +24,3 @@ func main(){
 		fmt.Println("Stay")
 	}
 }
-
