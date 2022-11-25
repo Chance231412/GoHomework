@@ -5,7 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"homework06/api/middleware"
-	"homework06/dao/mysql"
+	"homework06/dao"
 	"homework06/model"
 	"homework06/utils"
 	"time"
@@ -23,7 +23,7 @@ func register(c *gin.Context) {
 
 	var u model.User
 	//验证表单用户名是否已经被注册
-	ok := mysql.SelectUserByName(form.Name,&u)
+	ok := dao.SelectUserByName(form.Name,&u)
 	if ok {
 		utils.RespFail(c,fmt.Errorf("该用户名已存在"))
 		return
@@ -36,7 +36,7 @@ func register(c *gin.Context) {
 	}
 
 	//将用户信息添加到数据库
-	err = mysql.AddUser(&form)
+	err = dao.AddUser(&form)
 	if err!=nil {
 		utils.RespFail(c,err)
 		return
@@ -59,7 +59,7 @@ func login(c *gin.Context) {
 
 	var u model.User
 	//验证表单用户名是否已经被注册
-	ok := mysql.SelectUserByName(name,&u)
+	ok := dao.SelectUserByName(name,&u)
 	if !ok {
 		utils.RespFail(c,fmt.Errorf("该用户不存在"))
 		return
@@ -95,7 +95,7 @@ func changePassword(c *gin.Context) {
 	if name=="" {
 		utils.RespFail(c,fmt.Errorf("表单信息不全"))
 	}
-	password := c.PostForm("phone")
+	password := c.PostForm("password")
 	if password=="" {
 		utils.RespFail(c,fmt.Errorf("表单信息不全"))
 	}
@@ -106,7 +106,7 @@ func changePassword(c *gin.Context) {
 
 	//检验用户是否存在
 	var u model.User
-	ok := mysql.SelectUserByName(name,&u)
+	ok := dao.SelectUserByName(name,&u)
 	if !ok {
 		utils.RespFail(c,fmt.Errorf("该用户不存在"))
 		return
@@ -119,7 +119,7 @@ func changePassword(c *gin.Context) {
 	}
 
 	//更新用户密码
-	err := mysql.ChangePwd(name,newPwd)
+	err := dao.ChangePwd(name,newPwd)
 	if err!=nil {
 		utils.RespFail(c,err)
 		return
@@ -143,7 +143,7 @@ func retrievePassword(c *gin.Context) {
 
 	//检查用户是否存在，并拿到用户信息
 	var u model.User
-	ok := mysql.SelectUserByName(name,&u)
+	ok := dao.SelectUserByName(name,&u)
 	if !ok {
 		utils.RespFail(c,fmt.Errorf("该用户不存在"))
 		return
